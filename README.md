@@ -1,24 +1,24 @@
 # Prisma TypeScript Interfaces Generator
 
-[`prisma-generator-typescript-interfaces`](https://www.npmjs.com/package/prisma-generator-typescript-interfaces) - A [Prisma generator](https://www.prisma.io/docs/concepts/components/prisma-schema/generators) that creates zero-dependency TypeScript interfaces from Prisma schema.
+[`prisma-generator-typescript-schema`](https://www.npmjs.com/package/prisma-generator-typescript-schema) - A [Prisma generator](https://www.prisma.io/docs/concepts/components/prisma-schema/generators) that creates zero-dependency TypeScript interfaces and Zod schemas from Prisma schema files.
 
 ## Motivation
 
-While Prisma client's generated types are sufficient for most use cases, there are some scenarios where using them is not convenient or possible, due to the fact that they rely on both the `@prisma/client` package and on the client generated from your Prisma schema. That is where this generator comes in. It generates a zero-dependency TypeScript file containing type definitions for all your models. This file will not contain any imports and can be used standalone in any TypeScript app. By default, the definitions are [type-compatible](https://www.typescriptlang.org/docs/handbook/type-compatibility.html) with the Prisma client types, however this can be customized via the [options](#options), see below for more info.
+While Prisma client's generated types are sufficient for most use cases, there are some scenarios where using them is not convenient or possible, due to the fact that they rely on both the `@prisma/client` package and on the client generated from your Prisma schema. That is where this generator comes in. It generates a zero-dependency TypeScript and Zod schemas file containing type definitions for all your models. This file will not contain any imports and can be used standalone in any TypeScript app. By default, the definitions are [type-compatible](https://www.typescriptlang.org/docs/handbook/type-compatibility.html) with the Prisma client types, however this can be customized via the [options](#options), see below for more info.
 
 ## Usage
 
 To use this generator, first install the package:
 
 ```
-npm install --save-dev prisma-generator-typescript-interfaces
+npm install --save-dev prisma-generator-typescript-schema
 ```
 
 Next add the generator to your Prisma schema:
 
 ```prisma
 generator typescriptInterfaces {
-  provider = "prisma-generator-typescript-interfaces"
+  provider = "prisma-generator-typescript-schema"
 }
 ```
 
@@ -32,7 +32,7 @@ By default, that will output the TypeScript interface definitions to a file call
 
 ```prisma
 generator typescriptInterfaces {
-  provider    = "prisma-generator-typescript-interfaces"
+  provider    = "prisma-generator-typescript-schema"
   dateType    = "string"
   bigIntType  = "string"
   decimalType = "string"
@@ -44,26 +44,27 @@ Note that `bigint` types don't have a default `toJSON` method, so the above assu
 
 ## Options
 
-| **Option**        |                        **Type**                        |                                **Default**                                 | **Description**                                                                                                                                                                                       |
-| ----------------- | :----------------------------------------------------: | :------------------------------------------------------------------------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| output            |                        `string`                        |                             `"interfaces.ts"`                              | The output location for the generated TypeScript interfaces.                                                                                                                                          |
-| enumPrefix        |                        `string`                        |                                    `""`                                    | Prefix to add to enum types.                                                                                                                                                                          |
-| enumSuffix        |                        `string`                        |                                    `""`                                    | Suffix to add to enum types.                                                                                                                                                                          |
-| modelPrefix       |                        `string`                        |                                    `""`                                    | Prefix to add to model types.                                                                                                                                                                         |
-| modelSuffix       |                        `string`                        |                                    `""`                                    | Suffix to add to model types.                                                                                                                                                                         |
-| typePrefix        |                        `string`                        |                                    `""`                                    | Prefix to add to [type](https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-composite-types) types (MongoDB only).                                                       |
-| typeSuffix        |                        `string`                        |                                    `""`                                    | Suffix to add to [type](https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-composite-types) types (MongoDB only).                                                       |
-| headerComment     |                        `string`                        | `"This file was auto-generated by prisma-generator-typescript-interfaces"` | Sets the header comment added to the top of the generated file. Set this to an empty string to disable the header comment. Supports multiple lines with `"\n"`.                                       |
-| modelType         |                `"interface" \| "type"`                 |                               `"interface"`                                | Controls how model definitions are generated. `"interface"` will create TypeScript interfaces, `"type"` will create TypeScript types. If using MongoDB, this also affects `type` definitions.         |
-| enumType          |         `"stringUnion" \| "enum" \| "object"`          |                              `"stringUnion"`                               | Controls how enums are generated. `"object"` will create an object and type like the Prisma client, `"enum"` will create TypeScript enums, `"stringUnion"` will create a string union type.           |
-| dateType          |            `"Date" \| "string" \| "number"`            |                                  `"Date"`                                  | The type to use for DateTime model fields.                                                                                                                                                            |
-| bigIntType        |           `"bigint" \| "string" \| "number"`           |                                 `"bigint"`                                 | The type to use for BigInt model fields.                                                                                                                                                              |
-| decimalType       |          `"Decimal" \| "string" \| "number"`           |                                `"Decimal"`                                 | The type to use for Decimal model fields. The `Decimal` type here is just an interface with a `valueOf()` function. You will need to cast to an actual Decimal type if you want to use other methods. |
-| bytesType         | `"Buffer" \| "BufferObject" \| "string" \| "number[]"` |                                 `"Buffer"`                                 | The type to use for Bytes model fields. `BufferObject` is a type definition which matches the output of `Buffer.toJSON()`, which is called when running `JSON.stringify()` on a Buffer.               |
-| optionalRelations |                       `boolean`                        |                                   `true`                                   | Controls whether model relation fields are optional. If `true`, all model relation fields will use `?:` in the field definition.                                                                      |
-| omitRelations     |                       `boolean`                        |                                  `false`                                   | Controls whether model relation fields are omitted. If `true`, model definitions will not include their relations.                                                                                    |
-| optionalNullables |                       `boolean`                        |                                  `false`                                   | Controls whether nullable fields are optional. Nullable fields are always defined with `\| null` in their type definition, but if this is `true`, they will also use `?:`.                            |
-| prettier          |                       `boolean`                        |                                  `false`                                   | Formats the output using Prettier. Setting this to `true` requires that the `prettier` package is available.                                                                                          |
+| **Option**        |                        **Type**                        |                              **Default**                               | **Description**                                                                                                                                                                                       |
+| ----------------- | :----------------------------------------------------: | :--------------------------------------------------------------------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| output            |                        `string`                        |                           `"interfaces.ts"`                            | The output location for the generated TypeScript interfaces.                                                                                                                                          |
+| enumPrefix        |                        `string`                        |                                  `""`                                  | Prefix to add to enum types.                                                                                                                                                                          |
+| enumSuffix        |                        `string`                        |                                  `""`                                  | Suffix to add to enum types.                                                                                                                                                                          |
+| modelPrefix       |                        `string`                        |                                  `""`                                  | Prefix to add to model types.                                                                                                                                                                         |
+| modelSuffix       |                        `string`                        |                                  `""`                                  | Suffix to add to model types.                                                                                                                                                                         |
+| typePrefix        |                        `string`                        |                                  `""`                                  | Prefix to add to [type](https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-composite-types) types (MongoDB only).                                                       |
+| typeSuffix        |                        `string`                        |                                  `""`                                  | Suffix to add to [type](https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-composite-types) types (MongoDB only).                                                       |
+| headerComment     |                        `string`                        | `"This file was auto-generated by prisma-generator-typescript-schema"` | Sets the header comment added to the top of the generated file. Set this to an empty string to disable the header comment. Supports multiple lines with `"\n"`.                                       |
+| modelType         |                `"interface" \| "type"`                 |                             `"interface"`                              | Controls how model definitions are generated. `"interface"` will create TypeScript interfaces, `"type"` will create TypeScript types. If using MongoDB, this also affects `type` definitions.         |
+| enumType          |         `"stringUnion" \| "enum" \| "object"`          |                            `"stringUnion"`                             | Controls how enums are generated. `"object"` will create an object and type like the Prisma client, `"enum"` will create TypeScript enums, `"stringUnion"` will create a string union type.           |
+| dateType          |            `"Date" \| "string" \| "number"`            |                                `"Date"`                                | The type to use for DateTime model fields.                                                                                                                                                            |
+| bigIntType        |           `"bigint" \| "string" \| "number"`           |                               `"bigint"`                               | The type to use for BigInt model fields.                                                                                                                                                              |
+| decimalType       |          `"Decimal" \| "string" \| "number"`           |                              `"Decimal"`                               | The type to use for Decimal model fields. The `Decimal` type here is just an interface with a `valueOf()` function. You will need to cast to an actual Decimal type if you want to use other methods. |
+| bytesType         | `"Buffer" \| "BufferObject" \| "string" \| "number[]"` |                               `"Buffer"`                               | The type to use for Bytes model fields. `BufferObject` is a type definition which matches the output of `Buffer.toJSON()`, which is called when running `JSON.stringify()` on a Buffer.               |
+| optionalRelations |                       `boolean`                        |                                 `true`                                 | Controls whether model relation fields are optional. If `true`, all model relation fields will use `?:` in the field definition.                                                                      |
+| omitRelations     |                       `boolean`                        |                                `false`                                 | Controls whether model relation fields are omitted. If `true`, model definitions will not include their relations.                                                                                    |
+| optionalNullables |                       `boolean`                        |                                `false`                                 | Controls whether nullable fields are optional. Nullable fields are always defined with `\| null` in their type definition, but if this is `true`, they will also use `?:`.                            |
+| prettier          |                       `boolean`                        |                                `false`                                 | Formats the output using Prettier. Setting this to `true` requires that the `prettier` package is available.                                                                                          |
+| zodOutput         |                        `string`                        |                              `undefined`                               | The output location for the generated Zod schemas. If this is not set, no Zod schemas will be generated. The Zod schemas will not include relations.                                                  |
 
 ## Example
 
@@ -85,19 +86,26 @@ generator client {
 }
 
 generator typescriptInterfaces {
-  provider = "prisma-generator-typescript-interfaces"
+  provider = "prisma-generator-typescript-schema"
   output = "../src/dto/interfaces.ts"
   prettier = true
 }
 
 generator typescriptInterfacesJson {
-  provider = "prisma-generator-typescript-interfaces"
+  provider = "prisma-generator-typescript-schema"
   output = "../src/dto/json-interfaces.ts"
   modelSuffix = "Json"
   dateType = "string"
   bigIntType = "string"
   decimalType = "string"
   bytesType = "BufferObject"
+  prettier = true
+}
+
+generator zodSchemas {
+  provider = "prisma-generator-typescript-schema"
+  output = "../src/dto/interfaces.ts"
+  zodOutput = "zod.ts"
   prettier = true
 }
 
@@ -174,74 +182,68 @@ model Data {
 <summary>src/dto/interfaces.ts</summary>
 
 ```typescript
-// This file was auto-generated by prisma-generator-typescript-interfaces
+// This file was auto-generated by prisma-generator-typescript-schema
 
 export type Fruits = "Apple" | "Banana" | "Orange" | "Pear";
 
 export interface RelationA {
-  id: number;
-  Data?: Data[];
+	id: number;
+	Data?: Data[];
 }
 
 export interface RelationB {
-  id: number;
-  dataId: number;
-  data?: Data;
+	id: number;
+	dataId: number;
+	data?: Data;
 }
 
 export interface RelationC {
-  id: number;
-  dataId: number;
-  data?: Data;
+	id: number;
+	dataId: number;
+	data?: Data;
 }
 
 export interface Data {
-  id: number;
-  stringField: string;
-  booleanField: boolean;
-  intField: number;
-  bigIntField: bigint;
-  floatField: number;
-  decimalField: Decimal;
-  dateField: Date;
-  jsonField: JsonValue;
-  bytesField: Buffer;
-  enumField: Fruits;
-  relationId: number;
-  relationField?: RelationA;
-  optionalStringField: string | null;
-  optionalBooleanField: boolean | null;
-  optionalIntField: number | null;
-  optionalBigIntField: bigint | null;
-  optionalFloatField: number | null;
-  optionalDecimalField: Decimal | null;
-  optionalDateField: Date | null;
-  optionalJsonField: JsonValue | null;
-  optionalBytesField: Buffer | null;
-  optionalEnumField: Fruits | null;
-  optionalRelationField?: RelationB | null;
-  stringArrayField: string[];
-  booleanArrayField: boolean[];
-  intArrayField: number[];
-  bigIntArrayField: bigint[];
-  floatArrayField: number[];
-  decimalArrayField: Decimal[];
-  dateArrayField: Date[];
-  jsonArrayField: JsonValue[];
-  bytesArrayField: Buffer[];
-  enumArrayField: Fruits[];
-  relationArrayField?: RelationC[];
+	id: number;
+	stringField: string;
+	booleanField: boolean;
+	intField: number;
+	bigIntField: bigint;
+	floatField: number;
+	decimalField: Decimal;
+	dateField: Date;
+	jsonField: JsonValue;
+	bytesField: Buffer;
+	enumField: Fruits;
+	relationId: number;
+	relationField?: RelationA;
+	optionalStringField: string | null;
+	optionalBooleanField: boolean | null;
+	optionalIntField: number | null;
+	optionalBigIntField: bigint | null;
+	optionalFloatField: number | null;
+	optionalDecimalField: Decimal | null;
+	optionalDateField: Date | null;
+	optionalJsonField: JsonValue | null;
+	optionalBytesField: Buffer | null;
+	optionalEnumField: Fruits | null;
+	optionalRelationField?: RelationB | null;
+	stringArrayField: string[];
+	booleanArrayField: boolean[];
+	intArrayField: number[];
+	bigIntArrayField: bigint[];
+	floatArrayField: number[];
+	decimalArrayField: Decimal[];
+	dateArrayField: Date[];
+	jsonArrayField: JsonValue[];
+	bytesArrayField: Buffer[];
+	enumArrayField: Fruits[];
+	relationArrayField?: RelationC[];
 }
 
 type Decimal = { valueOf(): string };
 
-type JsonValue =
-  | string
-  | number
-  | boolean
-  | { [key in string]?: JsonValue }
-  | Array<JsonValue>
-  | null;
+type JsonValue = string | number | boolean | { [key in string]?: JsonValue } | Array<JsonValue> | null;
 ```
 
 </details>
@@ -250,81 +252,136 @@ type JsonValue =
 <summary>src/dto/json-interfaces.ts</summary>
 
 ```typescript
-// This file was auto-generated by prisma-generator-typescript-interfaces
+// This file was auto-generated by prisma-generator-typescript-schema
 
 export type Fruits = "Apple" | "Banana" | "Orange" | "Pear";
 
 export interface RelationAJson {
-  id: number;
-  Data?: DataJson[];
+	id: number;
+	Data?: DataJson[];
 }
 
 export interface RelationBJson {
-  id: number;
-  dataId: number;
-  data?: DataJson;
+	id: number;
+	dataId: number;
+	data?: DataJson;
 }
 
 export interface RelationCJson {
-  id: number;
-  dataId: number;
-  data?: DataJson;
+	id: number;
+	dataId: number;
+	data?: DataJson;
 }
 
 export interface DataJson {
-  id: number;
-  stringField: string;
-  booleanField: boolean;
-  intField: number;
-  bigIntField: string;
-  floatField: number;
-  decimalField: string;
-  dateField: string;
-  jsonField: JsonValue;
-  bytesField: BufferObject;
-  enumField: Fruits;
-  relationId: number;
-  relationField?: RelationAJson;
-  optionalStringField: string | null;
-  optionalBooleanField: boolean | null;
-  optionalIntField: number | null;
-  optionalBigIntField: string | null;
-  optionalFloatField: number | null;
-  optionalDecimalField: string | null;
-  optionalDateField: string | null;
-  optionalJsonField: JsonValue | null;
-  optionalBytesField: BufferObject | null;
-  optionalEnumField: Fruits | null;
-  optionalRelationField?: RelationBJson | null;
-  stringArrayField: string[];
-  booleanArrayField: boolean[];
-  intArrayField: number[];
-  bigIntArrayField: string[];
-  floatArrayField: number[];
-  decimalArrayField: string[];
-  dateArrayField: string[];
-  jsonArrayField: JsonValue[];
-  bytesArrayField: BufferObject[];
-  enumArrayField: Fruits[];
-  relationArrayField?: RelationCJson[];
+	id: number;
+	stringField: string;
+	booleanField: boolean;
+	intField: number;
+	bigIntField: string;
+	floatField: number;
+	decimalField: string;
+	dateField: string;
+	jsonField: JsonValue;
+	bytesField: BufferObject;
+	enumField: Fruits;
+	relationId: number;
+	relationField?: RelationAJson;
+	optionalStringField: string | null;
+	optionalBooleanField: boolean | null;
+	optionalIntField: number | null;
+	optionalBigIntField: string | null;
+	optionalFloatField: number | null;
+	optionalDecimalField: string | null;
+	optionalDateField: string | null;
+	optionalJsonField: JsonValue | null;
+	optionalBytesField: BufferObject | null;
+	optionalEnumField: Fruits | null;
+	optionalRelationField?: RelationBJson | null;
+	stringArrayField: string[];
+	booleanArrayField: boolean[];
+	intArrayField: number[];
+	bigIntArrayField: string[];
+	floatArrayField: number[];
+	decimalArrayField: string[];
+	dateArrayField: string[];
+	jsonArrayField: JsonValue[];
+	bytesArrayField: BufferObject[];
+	enumArrayField: Fruits[];
+	relationArrayField?: RelationCJson[];
 }
 
-type JsonValue =
-  | string
-  | number
-  | boolean
-  | { [key in string]?: JsonValue }
-  | Array<JsonValue>
-  | null;
+type JsonValue = string | number | boolean | { [key in string]?: JsonValue } | Array<JsonValue> | null;
 
 type BufferObject = { type: "Buffer"; data: number[] };
 ```
 
 </details>
 
+<details>
+<summary>src/dto/zod.ts</summary>
+
+```typescript
+// This file was auto-generated by prisma-generator-typescript-schema
+import { z } from "zod";
+
+export const Fruits = z.enum(["Apple", "Banana", "Orange", "Pear"]);
+
+export const RelationA = z.object({
+	id: z.number().int(),
+});
+
+export const RelationB = z.object({
+	id: z.number().int(),
+	dataId: z.number().int(),
+});
+
+export const RelationC = z.object({
+	id: z.number().int(),
+	dataId: z.number().int(),
+});
+
+export const Data = z.object({
+	id: z.number().int(),
+	stringField: z.string(),
+	booleanField: z.boolean(),
+	intField: z.number().int(),
+	bigIntField: z.bigint(),
+	floatField: z.number(),
+	decimalField: z.number(),
+	dateField: z.date(),
+	jsonField: z.any(),
+	bytesField: z.instanceof(Buffer),
+	enumField: Fruits,
+	relationId: z.number().int(),
+	optionalStringField: z.string().nullable(),
+	optionalBooleanField: z.boolean().nullable(),
+	optionalIntField: z.number().int().nullable(),
+	optionalBigIntField: z.bigint().nullable(),
+	optionalFloatField: z.number().nullable(),
+	optionalDecimalField: z.number().nullable(),
+	optionalDateField: z.date().nullable(),
+	optionalJsonField: z.any().nullable(),
+	optionalBytesField: z.instanceof(Buffer).nullable(),
+	optionalEnumField: Fruits.nullable(),
+	stringArrayField: z.array(z.string()),
+	booleanArrayField: z.array(z.boolean()),
+	intArrayField: z.array(z.number().int()),
+	bigIntArrayField: z.array(z.bigint()),
+	floatArrayField: z.array(z.number()),
+	decimalArrayField: z.array(z.number()),
+	dateArrayField: z.array(z.date()),
+	jsonArrayField: z.array(z.any()),
+	bytesArrayField: z.array(z.instanceof(Buffer)),
+	enumArrayField: z.array(Fruits),
+});
+```
+
+</details>
+
 ## Issues
 
-Please report any issues to the [issues](https://github.com/mogzol/prisma-generator-typescript-interfaces/issues) page. I am actively using this package, so I'll try my best to address any issues that are reported. Alternatively, feel free to submit a PR.
+Please report any issues to the [issues](https://github.com/mogzol/prisma-generator-typescript-schema/issues) page. I am actively using this package, so I'll try my best to address any issues that are reported. Alternatively, feel free to submit a PR.
 
 ## Developing
 

@@ -131,6 +131,12 @@ generator modelType {
   modelType = "type"
 }
 
+generator zod {
+  provider  = "node --loader ts-node/esm generator.ts"
+  output    = "zod_interfaces.ts" // This will be ignored by zod test
+  zodOutput = "zod.ts"
+}
+
 // ========================
 // Prisma Schema
 // ========================

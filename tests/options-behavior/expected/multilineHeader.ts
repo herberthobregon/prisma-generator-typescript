@@ -13,7 +13,7 @@ export interface Person {
   age: number;
   email: string | null;
   gender: Gender;
-  addressId: number;
+  addressId: Address['id'];
   address?: Address;
   friends?: Person[];
   friendsOf?: Person[];
@@ -61,7 +61,7 @@ export interface Data {
   jsonArrayField: JsonValue[];
   bytesArrayField: Buffer[];
   enumArrayField: DataTest[];
-  personId: number;
+  personId: Person['id'];
   person?: Person;
 }
 

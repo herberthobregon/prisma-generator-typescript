@@ -1,4 +1,4 @@
 {
-  "extends": "./tsconfig.json",
-  "include": ["generator.ts"]
+	"extends": "./tsconfig.json",
+	"include": ["generator.ts"]
 }
