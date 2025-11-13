@@ -1,6 +1,6 @@
 {
 	"name": "@snelx/prisma-generator-typescript-schema",
-	"version": "1.2.0",
+	"version": "1.2.1",
 	"description": "Generate zero-dependency Typescript interfaces from Prisma schema",
 	"author": "Herberth Obregón",
 	"license": "MIT",
@@ -9,18 +9,18 @@
 		"url": "https://github.com/herberthobregon/prisma-generator-typescript-schema"
 	},
 	"type": "module",
-	"main": "generator.js",
+	"main": "dist/generator.js",
 	"files": [
-		"generator.js"
+		"dist"
 	],
 	"bin": {
-		"prisma-generator-typescript-schema": "generator.js"
+		"prisma-generator-typescript-schema": "dist/generator.js"
 	},
 	"scripts": {
 		"build": "tsc -p tsconfig.build.json",
 		"dev": "tsc -p tsconfig.build.json -w",
-		"postbuild": "node -e \"g='generator.js';f=require('fs');f.writeFileSync(g,'#!/usr/bin/env node\\n'+f.readFileSync(g))\"",
-		"clean": "rimraf --glob generator.js **/__TEST_TMP__",
+		"postbuild": "node -e \"g='dist/generator.js';f=require('fs');f.writeFileSync(g,'#!/usr/bin/env node\\n'+f.readFileSync(g))\"",
+		"clean": "rimraf --glob dist **/__TEST_TMP__",
 		"generate": "prisma generate --schema=prisma/example.prisma",
 		"lint": "prettier --check . && eslint . && echo 'Linting complete.'",
 		"lint:fix": "prettier --write . && eslint . --fix && echo 'Linting complete.'",
