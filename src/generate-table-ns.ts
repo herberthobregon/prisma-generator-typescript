@@ -3,6 +3,18 @@ import "dotenv/config";
 import { DMMF } from "@prisma/generator-helper";
 import { Pool } from "pg";
 
+export function getHeader() {
+	return `
+import { Pool } from "pg";
+const client = new Pool({
+	connectionString: process.env.DATABASE_URL!,
+});
+
+export async function connect() {
+	await client.connect();
+} 
+`;
+}
 export function generateTableNamespaces(models: DMMF.Model[]) {
 	return models
 		.map((model) => {
@@ -95,6 +107,10 @@ export namespace ${modelName} {
 		})
 		.join("\n\n");
 }
+
+// ------------------------------------------------------------
+// LIVE EXAMPLE
+// ------------------------------------------------------------
 
 const client = new Pool({
 	connectionString: process.env.DATABASE_URL!,

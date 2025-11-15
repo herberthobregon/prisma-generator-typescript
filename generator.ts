@@ -98,6 +98,13 @@ generatorHandler({
 				throw new Error("Unable import Prettier. Is it installed?");
 			}
 		}
+		if (prettier) {
+			ts = await prettier.format(ts, { parser: "typescript" });
+		}
+		const outputFile = options.generator.output?.value as string;
+		const outputDir = dirname(outputFile);
+		mkdirSync(outputDir, { recursive: true });
+		writeFileSync(outputFile, ts);
 
 		if (config.zodOutput) {
 			const enumsZod = enums.map((e) => getEnumZod(config, e, enumNameMap));
@@ -109,21 +116,9 @@ generatorHandler({
 				zodTs = await prettier.format(zodTs, { parser: "typescript" });
 			}
 
-			const outputFile = options.generator.output?.value as string;
-			const outputDir = dirname(outputFile);
-			mkdirSync(outputDir, { recursive: true });
+			const outputDir = dirname(options.generator.sourceFilePath);
 			const safePath = path.join(outputDir, config.zodOutput);
-			console.log("Writing Zod schema to", safePath);
 			writeFileSync(safePath, zodTs);
 		}
-
-		if (prettier) {
-			ts = await prettier.format(ts, { parser: "typescript" });
-		}
-
-		const outputFile = options.generator.output?.value as string;
-		const outputDir = dirname(outputFile);
-		mkdirSync(outputDir, { recursive: true });
-		writeFileSync(outputFile, ts);
 	},
 });

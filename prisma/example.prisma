@@ -16,6 +16,13 @@ generator typescriptInterfaces {
   prettier = true
 }
 
+generator typescriptInterfacesDebug {
+  provider  = "node --inspect-brk --loader ts-node/esm generator.ts"
+  output    = "debug.ts"
+  zodOutput = "example.zod.ts"
+  prettier  = true
+}
+
 generator typescriptInterfacesJson {
   provider    = "node --loader ts-node/esm generator.ts"
   output      = "exampleJson.ts"
@@ -56,16 +63,18 @@ model Address {
 }
 
 model Data {
-  id           String   @id @default(uuid()) @db.Uuid
-  stringField  String
-  booleanField Boolean
-  intField     Int
-  bigIntField  BigInt
-  floatField   Float
-  decimalField Decimal
-  dateField    DateTime
-  jsonField    Json
-  bytesField   Bytes
+  id                 String   @id @default(uuid()) @db.Uuid
+  stringField        String
+  booleanField       Boolean
+  intField           Int
+  bigIntField        BigInt
+  floatField         Float
+  decimalField       Decimal
+  dateField          DateTime
+  jsonFieldNulleable Json
+  jsonObject         Json     @default("{}")
+  jsonArray          Json     @default("[]")
+  bytesField         Bytes
 
   optionalStringField  String?
   optionalBooleanField Boolean?

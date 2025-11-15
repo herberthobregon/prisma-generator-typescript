@@ -1,0 +1,22 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "prisma-generate",
+			"type": "npm",
+			"script": "generate",
+			"isBackground": true,
+			"problemMatcher": {
+				"owner": "typescript",
+				"pattern": {
+					"regexp": "Debugger listening on ws://127.0.0.1:9229/.*"
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "Debugger listening on",
+					"endsPattern": "Prisma schema loaded from"
+				}
+			}
+		}
+	]
+}

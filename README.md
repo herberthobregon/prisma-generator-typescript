@@ -1,4 +1,4 @@
-# Prisma TypeScript Interfaces Generator
+# Prisma TypeScript Interfaces And Zod Schemas Generator
 
 [`prisma-generator-typescript-schema`](https://www.npmjs.com/package/prisma-generator-typescript-schema) - A [Prisma generator](https://www.prisma.io/docs/concepts/components/prisma-schema/generators) that creates zero-dependency TypeScript interfaces and Zod schemas from Prisma schema files.
 

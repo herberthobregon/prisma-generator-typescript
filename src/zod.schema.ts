@@ -2,12 +2,21 @@ import type { DMMF } from "@prisma/generator-helper";
 import z from "zod";
 import { ConfigSchema } from "./config.zod.js";
 
-const SCALAR_TYPE_TO_ZOD: Record<string, (config: z.infer<typeof ConfigSchema>) => string> = {
+const SCALAR_TYPE_TO_ZOD: Record<string, (config: z.infer<typeof ConfigSchema>, field?: DMMF.Field) => string> = {
 	String: () => "z.string()",
 	Boolean: () => "z.boolean()",
 	Int: () => "z.number().int()",
 	Float: () => "z.number()",
-	Json: () => "z.any()",
+	Json: (config, field) => {
+		let zodType = "z.any()";
+		if (field?.default == "{}") {
+			zodType = "z.any()";
+		}
+		if (field?.default == "[]") {
+			zodType = "z.array(z.any())";
+		}
+		return zodType;
+	},
 	DateTime: (config) => (config.dateType === "string" ? "z.string().datetime()" : "z.date()"),
 	BigInt: () => "z.bigint()",
 	Decimal: () => "z.number()",
@@ -16,7 +25,7 @@ const SCALAR_TYPE_TO_ZOD: Record<string, (config: z.infer<typeof ConfigSchema>) 
 
 function getZodSchema(field: DMMF.Field, config: z.infer<typeof ConfigSchema>) {
 	const zodTypeGetter = SCALAR_TYPE_TO_ZOD[field.type];
-	let zodType = zodTypeGetter ? zodTypeGetter(config) : null;
+	let zodType = zodTypeGetter ? zodTypeGetter(config, field) : null;
 
 	if (!zodType) {
 		switch (field.kind) {
