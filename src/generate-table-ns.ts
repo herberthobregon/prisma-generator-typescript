@@ -17,9 +17,9 @@ export async function connect() {
 }
 export function generateTableNamespaces(models: DMMF.Model[]) {
 	return models
-		.map((model) => {
+		.map(model => {
 			const modelName = model.name;
-			const primaryKeyFields = model.fields.filter((field) => field.isId).map((field) => field.name);
+			const primaryKeyFields = model.fields.filter(field => field.isId).map(field => field.name);
 			const primaryKeyType = primaryKeyFields.length ? `Pick<${modelName}, "${primaryKeyFields.join('" | "')}">` : "never";
 
 			return `
@@ -113,7 +113,7 @@ export namespace ${modelName} {
 // ------------------------------------------------------------
 
 const client = new Pool({
-	connectionString: process.env.DATABASE_URL!,
+	connectionString: process.env.DATABASE_URL!
 });
 
 export async function connect() {
@@ -196,7 +196,7 @@ export namespace users {
 			let keys = Object.keys(args.select);
 			if (keys.length > 0) {
 				let select: string[] = [];
-				keys.forEach((field) => {
+				keys.forEach(field => {
 					if (userJoinFields.has(field)) {
 						joins.push(field); // Añadir a las relaciones que se deben unir
 						return; // No se incluye directamente en la selección

@@ -1,6 +1,6 @@
 {
 	"name": "@snelx/prisma-generator-typescript-schema",
-	"version": "1.2.1",
+	"version": "1.3.0",
 	"description": "Generate zero-dependency Typescript interfaces from Prisma schema",
 	"author": "Herberth Obregón",
 	"license": "MIT",
@@ -33,6 +33,7 @@
 	"devDependencies": {
 		"@eslint/js": "^9.15.0",
 		"@prisma/client": "^5.22.0",
+		"@snelx/prettier-plugin-import-sort": "^1.0.0",
 		"@types/eslint__js": "^8.42.3",
 		"@types/node": "^22.10.0",
 		"@types/pg": "^8.11.10",
@@ -47,6 +48,12 @@
 		"typescript": "^5.7.2",
 		"typescript-eslint": "^8.16.0",
 		"zod": "^3.25.76"
+	},
+	"importSort": {
+		".js, .mjs, .cjs, .ts, .tsx, .mts": {
+			"style": "module",
+			"parser": "typescript"
+		}
 	},
 	"keywords": [
 		"prisma",

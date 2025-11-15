@@ -1,8 +1,9 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import path, { dirname } from "node:path";
 
 import generatorHelper from "@prisma/generator-helper";
-import path, { dirname } from "node:path";
 import z from "zod";
+
 import { ConfigSchema } from "./src/config.zod.js";
 import { CUSTOM_TYPES, getEnumTs, getModelTs } from "./src/ts.schema.js";
 import { getEnumZod, getModelZod } from "./src/zod.schema.js";
@@ -14,7 +15,7 @@ generatorHandler({
 	onManifest() {
 		return {
 			prettyName: "Typescript Interfaces",
-			defaultOutput: "interfaces.ts",
+			defaultOutput: "interfaces.ts"
 		};
 	},
 	async onGenerate(options) {
@@ -38,11 +39,11 @@ generatorHandler({
 			optionalRelations: options.generator.config.optionalRelations !== "false", // Default true
 			omitRelations: options.generator.config.omitRelations === "true", // Default false
 			optionalNullables: options.generator.config.optionalNullables === "true", // Default false
-			prettier: options.generator.config.prettier === "true", // Default false
+			prettier: options.generator.config.prettier === "true" // Default false
 		};
 		const configResult = ConfigSchema.safeParse(configUntrusted);
 		if (!configResult.success) {
-			const errors = configResult.error.issues.map((issue) => {
+			const errors = configResult.error.issues.map(issue => {
 				const value = options.generator.config[issue.path[0]];
 				return `Invalid ${issue.path[0]}: ${value as string}`;
 			});
@@ -59,21 +60,21 @@ generatorHandler({
 
 		const usedCustomTypes = new Set<keyof typeof CUSTOM_TYPES>();
 
-		const enumNameMap = new Map<string, string>(enums.map((e) => [e.name, `${config.enumPrefix}${e.name}${config.enumSuffix}`]));
-		const modelNameMap = new Map<string, string>(models.map((m) => [m.name, `${config.modelPrefix}${m.name}${config.modelSuffix}`]));
-		const typeNameMap = new Map<string, string>(types.map((t) => [t.name, `${config.typePrefix}${t.name}${config.typeSuffix}`]));
+		const enumNameMap = new Map<string, string>(enums.map(e => [e.name, `${config.enumPrefix}${e.name}${config.enumSuffix}`]));
+		const modelNameMap = new Map<string, string>(models.map(m => [m.name, `${config.modelPrefix}${m.name}${config.modelSuffix}`]));
+		const typeNameMap = new Map<string, string>(types.map(t => [t.name, `${config.typePrefix}${t.name}${config.typeSuffix}`]));
 
-		const enumsTs = enums.map((e) => getEnumTs(config, e, enumNameMap));
+		const enumsTs = enums.map(e => getEnumTs(config, e, enumNameMap));
 		// Types and Models are essentially the same thing, so we can run both through getModelTs
-		const modelsTs = [...models, ...types].map((m) => getModelTs(config, m, modelNameMap, enumNameMap, typeNameMap, usedCustomTypes));
-		const customTypesTs = Array.from(usedCustomTypes).map((t) => CUSTOM_TYPES[t]);
+		const modelsTs = [...models, ...types].map(m => getModelTs(config, m, modelNameMap, enumNameMap, typeNameMap, usedCustomTypes));
+		const customTypesTs = Array.from(usedCustomTypes).map(t => CUSTOM_TYPES[t]);
 
 		let ts = [...enumsTs, ...modelsTs, ...customTypesTs].join("\n\n") + "\n";
 
 		if (config.headerComment) {
 			const headerContent = config.headerComment
 				.split("\n")
-				.map((line) => `// ${line}`)
+				.map(line => `// ${line}`)
 				.join("\n");
 			ts = `${headerContent}\n\n${ts}`;
 		}
@@ -107,8 +108,8 @@ generatorHandler({
 		writeFileSync(outputFile, ts);
 
 		if (config.zodOutput) {
-			const enumsZod = enums.map((e) => getEnumZod(config, e, enumNameMap));
-			const modelsZod = [...models, ...types].map((m) => getModelZod(config, m, modelNameMap, enumNameMap, typeNameMap));
+			const enumsZod = enums.map(e => getEnumZod(config, e, enumNameMap));
+			const modelsZod = [...models, ...types].map(m => getModelZod(config, m, modelNameMap, enumNameMap, typeNameMap));
 
 			let zodTs = `import { z } from "zod";\n\n${[...enumsZod, ...modelsZod].join("\n\n")}\n`;
 
@@ -120,5 +121,5 @@ generatorHandler({
 			const safePath = path.join(outputDir, config.zodOutput);
 			writeFileSync(safePath, zodTs);
 		}
-	},
+	}
 });

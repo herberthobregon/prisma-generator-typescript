@@ -1,5 +1,6 @@
 import type { DMMF } from "@prisma/generator-helper";
 import z from "zod";
+
 import { ConfigSchema } from "./config.zod.js";
 
 export const JSON_REGEX = /^\s*!?\[(.*?)\]/m;
@@ -12,10 +13,10 @@ const SCALAR_TYPE_GETTERS: Record<string, (config: z.infer<typeof ConfigSchema>)
 	Int: () => "number",
 	Float: () => "number",
 	Json: () => "JsonValue",
-	DateTime: (config) => (config.dateType.includes("|") ? `(${config.dateType})` : config.dateType),
-	BigInt: (config) => (config.bigIntType.includes("|") ? `(${config.bigIntType})` : config.bigIntType),
-	Decimal: (config) => (config.decimalType.includes("|") ? `(${config.decimalType})` : config.decimalType),
-	Bytes: (config) => (config.bytesType.includes("|") ? `(${config.bytesType})` : config.bytesType),
+	DateTime: config => (config.dateType.includes("|") ? `(${config.dateType})` : config.dateType),
+	BigInt: config => (config.bigIntType.includes("|") ? `(${config.bigIntType})` : config.bigIntType),
+	Decimal: config => (config.decimalType.includes("|") ? `(${config.decimalType})` : config.decimalType),
+	Bytes: config => (config.bytesType.includes("|") ? `(${config.bytesType})` : config.bytesType)
 };
 
 // Since we want the output to have zero dependencies, define custom types which are compatible
@@ -23,7 +24,7 @@ const SCALAR_TYPE_GETTERS: Record<string, (config: z.infer<typeof ConfigSchema>)
 export const CUSTOM_TYPES = {
 	BufferObject: 'type BufferObject = { type: "Buffer"; data: number[] };',
 	Decimal: "type Decimal = { valueOf(): string };",
-	JsonValue: "type JsonValue = string | number | boolean | { [key in string]?: JsonValue } | Array<JsonValue> | null;",
+	JsonValue: "type JsonValue = string | number | boolean | { [key in string]?: JsonValue } | Array<JsonValue> | null;"
 };
 
 function createType(description: string | undefined, config: z.infer<typeof ConfigSchema>) {
@@ -67,10 +68,10 @@ export function getModelTs(
 	modelNameMap: Map<string, string>,
 	enumNameMap: Map<string, string>,
 	typeNameMap: Map<string, string>,
-	usedCustomTypes: Set<keyof typeof CUSTOM_TYPES>,
+	usedCustomTypes: Set<keyof typeof CUSTOM_TYPES>
 ): string {
 	const fields = modelData.fields
-		.map((field) => {
+		.map(field => {
 			const getDefinition = (resolvedType: string, optional = false, isList = field.isList) =>
 				"  " +
 				// `// ${JSON.stringify(field.relationFromFields)} - ${JSON.stringify(field.relationToFields)} \n  ` +
@@ -89,7 +90,7 @@ export function getModelTs(
 						usedCustomTypes.add(resolvedType as keyof typeof CUSTOM_TYPES);
 					}
 					// check if has relation
-					const relationField = modelData.fields.find((f) => f.relationFromFields?.[0] == field.name);
+					const relationField = modelData.fields.find(f => f.relationFromFields?.[0] == field.name);
 					if (relationField) {
 						const modelName = modelNameMap.get(relationField.type);
 						const typeName = typeNameMap.get(relationField.type);
@@ -133,7 +134,7 @@ export function getModelTs(
 					throw new Error(`Unknown field kind: ${field.kind}`);
 			}
 		})
-		.filter((f) => f !== null)
+		.filter(f => f !== null)
 		.join("\n");
 
 	const name = modelNameMap.get(modelData.name) ?? typeNameMap.get(modelData.name);

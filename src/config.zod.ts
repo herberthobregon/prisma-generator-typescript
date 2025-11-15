@@ -5,7 +5,7 @@ const BigIntTypeLiterals = z.enum(["bigint", "string", "number"]);
 
 const StringBoolean = z
 	.string()
-	.transform((val) => val === "true")
+	.transform(val => val === "true")
 	.or(z.boolean());
 
 export const ConfigSchema = z.object({
@@ -23,18 +23,18 @@ export const ConfigSchema = z.object({
 	enumType: z.enum(["stringUnion", "enum", "object"]).default("stringUnion"),
 	dateType: z
 		.string()
-		.refine((val) => {
+		.refine(val => {
 			const parts = val.split(" | ");
 			if (parts.length > 2) return false;
-			return parts.every((part) => DateTypeLiterals.safeParse(part).success);
+			return parts.every(part => DateTypeLiterals.safeParse(part).success);
 		})
 		.default("Date"),
 	bigIntType: z
 		.string()
-		.refine((val) => {
+		.refine(val => {
 			const parts = val.split(" | ");
 			if (parts.length > 2) return false;
-			return parts.every((part) => BigIntTypeLiterals.safeParse(part).success);
+			return parts.every(part => BigIntTypeLiterals.safeParse(part).success);
 		})
 		.default("bigint"),
 	decimalType: z.enum(["Decimal", "string", "number"]).default("Decimal"),
@@ -45,5 +45,5 @@ export const ConfigSchema = z.object({
 	optionalRelations: StringBoolean.default(true),
 	omitRelations: StringBoolean.default(false),
 	optionalNullables: StringBoolean.default(false),
-	prettier: StringBoolean.default(false),
+	prettier: StringBoolean.default(false)
 });

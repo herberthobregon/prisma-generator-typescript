@@ -1,5 +1,6 @@
 import type { DMMF } from "@prisma/generator-helper";
 import z from "zod";
+
 import { ConfigSchema } from "./config.zod.js";
 
 const SCALAR_TYPE_TO_ZOD: Record<string, (config: z.infer<typeof ConfigSchema>, field?: DMMF.Field) => string> = {
@@ -17,10 +18,10 @@ const SCALAR_TYPE_TO_ZOD: Record<string, (config: z.infer<typeof ConfigSchema>, 
 		}
 		return zodType;
 	},
-	DateTime: (config) => (config.dateType === "string" ? "z.string().datetime()" : "z.date()"),
+	DateTime: config => (config.dateType === "string" ? "z.string().datetime()" : "z.date()"),
 	BigInt: () => "z.bigint()",
 	Decimal: () => "z.number()",
-	Bytes: () => "z.instanceof(Buffer)",
+	Bytes: () => "z.instanceof(Buffer)"
 };
 
 function getZodSchema(field: DMMF.Field, config: z.infer<typeof ConfigSchema>) {
@@ -61,7 +62,7 @@ export function getModelZod(
 	modelData: DMMF.Model,
 	modelNameMap: Map<string, string>,
 	_enumNameMap: Map<string, string>,
-	typeNameMap: Map<string, string>,
+	typeNameMap: Map<string, string>
 ): string {
 	const modelName = modelNameMap.get(modelData.name) ?? typeNameMap.get(modelData.name);
 	if (!modelName) {
@@ -69,8 +70,8 @@ export function getModelZod(
 	}
 
 	const fields = modelData.fields
-		.filter((field) => field.kind !== "object") // Exclude relations
-		.map((field) => {
+		.filter(field => field.kind !== "object") // Exclude relations
+		.map(field => {
 			const zodSchema = getZodSchema(field, config);
 			return `  ${field.name}: ${zodSchema}`;
 		})

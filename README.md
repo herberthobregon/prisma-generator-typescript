@@ -328,17 +328,17 @@ import { z } from "zod";
 export const Fruits = z.enum(["Apple", "Banana", "Orange", "Pear"]);
 
 export const RelationA = z.object({
-	id: z.number().int(),
+	id: z.number().int()
 });
 
 export const RelationB = z.object({
 	id: z.number().int(),
-	dataId: z.number().int(),
+	dataId: z.number().int()
 });
 
 export const RelationC = z.object({
 	id: z.number().int(),
-	dataId: z.number().int(),
+	dataId: z.number().int()
 });
 
 export const Data = z.object({
@@ -373,7 +373,7 @@ export const Data = z.object({
 	dateArrayField: z.array(z.date()),
 	jsonArrayField: z.array(z.any()),
 	bytesArrayField: z.array(z.instanceof(Buffer)),
-	enumArrayField: z.array(Fruits),
+	enumArrayField: z.array(Fruits)
 });
 ```
 

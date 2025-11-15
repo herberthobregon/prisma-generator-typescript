@@ -12,6 +12,7 @@ import { exec } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
+
 import { rimraf } from "rimraf";
 
 const TEMP_TEST_DIRNAME = "__TEST_TMP__";
@@ -24,7 +25,7 @@ const trimMultiLine = (s: string) =>
 	s
 		.trim()
 		.split("\n")
-		.map((l) => l.trim())
+		.map(l => l.trim())
 		.join("\n");
 
 async function readFile(path: string) {
@@ -51,7 +52,7 @@ async function readDir(path: string) {
 
 const testFilters = process.argv.slice(2);
 
-const tests = (await readDir("tests")).filter((d) => d.isDirectory() && (!testFilters.length || testFilters.includes(d.name))).map((d) => path.join(d.path, d.name));
+const tests = (await readDir("tests")).filter(d => d.isDirectory() && (!testFilters.length || testFilters.includes(d.name))).map(d => path.join(d.path, d.name));
 
 if (!tests.length) {
 	console.error("No tests found!");
@@ -59,7 +60,7 @@ if (!tests.length) {
 }
 
 // Get the length of the longest test name, so we can pad the output
-const longestName = Math.max(...tests.map((t) => t.length));
+const longestName = Math.max(...tests.map(t => t.length));
 
 console.log("\nRunning tests...");
 
@@ -139,7 +140,7 @@ for (const test of tests) {
 		}
 
 		if (errors.length) {
-			throw new Error("Errors:\n" + errors.map((e) => ` - ${e}`).join("\n"));
+			throw new Error("Errors:\n" + errors.map(e => ` - ${e}`).join("\n"));
 		}
 
 		process.stdout.write(GREEN + " PASS " + RESET + "\n");
